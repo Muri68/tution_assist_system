@@ -1,0 +1,56 @@
+Installation
+
+2. Create a Virtual Environment and Activate
+
+Install Virtual Environment First
+
+$  pip install virtualenv
+Create Virtual Environment
+
+For Windows
+
+$  python -m venv venv
+For Mac
+
+$  python3 -m venv venv
+For Linux
+
+$  virtualenv .
+Activate Virtual Environment
+
+For Windows
+
+$  source venv/scripts/activate
+For Mac
+
+$  source venv/bin/activate
+For Linux
+
+$  source bin/activate
+3. Clone this project
+
+$  git clone https://github.com/jobic10/student-management-using-django.git
+Then, Enter the project
+
+$  cd student-management-using-django
+4. Install Requirements from 'requirements.txt'
+
+$  pip3 install -r requirements.txt
+5. Add the hosts
+
+Got to settings.py file
+Then, On allowed hosts, Use [] as your host.
+ALLOWED_HOSTS = []
+Do not use the fault allowed settings in this repo. It has security risk!
+
+6. Now Run Server
+
+Command for PC:
+
+$ python manage.py runserver
+Command for Mac:
+
+$ python3 manage.py runserver
+Command for Linux:
+
+$ python3 manage.py runserver

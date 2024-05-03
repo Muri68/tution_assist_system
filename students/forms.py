@@ -41,7 +41,4 @@ class StudentCampaignForm(forms.ModelForm):
         
         
 
-class AmountRaisedForm(forms.ModelForm):
-    class Meta:
-        model = StudentCampaign
-        fields = ['amount_raised',]
+      
