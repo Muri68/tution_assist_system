@@ -29,7 +29,6 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <h3>Financially Challenged Students</h3>
-                            {% include 'includes/alerts.html' %}
                             <table class="table table-hover table-center mb-0 datatable">
                                 <thead>
                                     <tr>
@@ -41,28 +40,23 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for student in all_students %}
+                                    {% for student in students_awaiting_approve %}
                                     <tr>
                                         <td>{{student.student_id}}</td>
                                         <td>
                                             <h2 class="table-avatar">
-                                                <a href="{% url 'student_detail' student.id %}" class="avatar avatar-sm mr-2">
+                                                <a href="#" class="avatar avatar-sm mr-2">
                                                     <img class="avatar-img rounded-circle" src="{{student.profile_picture.url}}" alt="User Image">
                                                 </a>
-                                                <a href="{% url 'student_detail' student.id %}">{{student.full_name}}</a>
+                                                <a href="#">{{student.full_name}}</a>
                                             </h2>
                                         </td>
                                         <td>{{student.gender}}</td>
                                         <td>{{student.phone_number}}</td>
                                         <td class="text-right">
                                             <div class="actions">
-                                                <a href="{% url 'student_detail' student.id %}"
-                                                    class="btn btn-sm bg-success mr-2">
-                                                    <i class="fas fa-eye"></i> View
-                                                </a>
-                                                <a href="#"
-                                                    class="btn btn-sm bg-success-light mr-2">
-                                                    <i class="fas fa-pen"></i> Edit
+                                                <a href="{% url 'students-awaiting-approval-detail' student.id %}" class="btn btn-sm bg-primary-light">
+                                                    <i class="fas fa-eye"></i> View Details
                                                 </a>
                                             </div>
                                         </td>

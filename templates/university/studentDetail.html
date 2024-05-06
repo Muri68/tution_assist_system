@@ -23,7 +23,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="about-info">
-                        <h4>About Me</h4>
+                        <h4>About Student</h4>
                         <div class="media mt-3">
                             <img src="{{ student.profile_picture.url }}" class="mr-3" alt="...">
                             <div class="media-body">
@@ -77,13 +77,13 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <div class="blue-box">
-                                    <h3>2050</h3>
+                                    <h3>{{student_campaign.amount_raised}}</h3>
                                     <p>Amount Raised</p>
                                 </div>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <div class="blue-box">
-                                    <h3>2950</h3>
+                                    <h3> {{amount_left}} </h3>
                                     <p>Amount Left</p>
                                 </div>
                             </div>
@@ -91,7 +91,7 @@
                         <div class="row mt-2">
                             <div class="col-md-12">
                                 <h5>Campaign Message</h5>
-                                <p>{{campaign.campaign_message}}</p>
+                                <p>{{student_campaign.campaign_message}}</p>
                             </div>
                         </div>
                         {% else %}

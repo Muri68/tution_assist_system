@@ -36,8 +36,8 @@
                                         <th>Name</th>
                                         <th>Gender</th>
                                         <th>Amount Needed</th>
+                                        <th>Amount Raised</th>
                                         <th>Due Date</th>
-                                        <th class="text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -46,26 +46,16 @@
                                         <td>{{campaign.user.student_id}}</td>
                                         <td>
                                             <h2 class="table-avatar">
-                                                <a href="teacher-details.html" class="avatar avatar-sm mr-2">
+                                                <a href="{% url 'student_detail' campaign.id %}" class="avatar avatar-sm mr-2">
                                                     <img class="avatar-img rounded-circle" src="{{campaign.user.profile_picture.url}}" alt="User Image">
                                                 </a>
-                                                <a href="#">{{campaign.user.full_name}}</a>
+                                                <a href="{% url 'student_detail' campaign.id %}">{{campaign.user.full_name}}</a>
                                             </h2>
                                         </td>
                                         <td>{{campaign.user.gender}}</td>
                                         <td>&#8358; {{campaign.financial_need}}</td>
-                                        <td>{{campaign.payment_deadline|date:"jS F Y"}}</td>
-                                        <td class="text-right">
-                                            <div class="actions">
-                                                <a href="#"
-                                                    class="btn btn-sm bg-success-light mr-2">
-                                                    <i class="fas fa-pen"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-sm bg-danger-light">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </div>
-                                        </td>
+                                        <td>&#8358; {{campaign.amount_raised}}</td>
+                                        <td>{{campaign.payment_deadline|date:"j F Y"}}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

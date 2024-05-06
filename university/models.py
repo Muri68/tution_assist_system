@@ -10,6 +10,8 @@ class University(models.Model):
     short_name = models.CharField(max_length=255)
     about = models.TextField()
     university_logo = models.ImageField(upload_to='university/logos')
+    address = models.CharField(max_length=255, null=True, blank=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
     account_number = models.IntegerField()
     account_name = models.CharField(max_length=100)
     bank = models.CharField(max_length=100)

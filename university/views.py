@@ -22,10 +22,12 @@ def get_university(request):
 @user_passes_test(check_role_university)
 def UniversityDashboard(request):
     university = get_object_or_404(University, user=request.user)
-    all_students = Student.objects.filter(university_id=university)
+    all_students = Student.objects.filter(university_id=university, is_verified=True)
+    students_awaiting_approve = Student.objects.filter(is_verified=False)
     university_donations = Donations.objects.filter(verified=True, student_university=university).order_by('-created_at')[:5]
     all_donations = Donations.objects.filter(student_university=university)
-    all_campaign = StudentCampaign.objects.filter(student_university=university).order_by('-created_at')
+    all_campaign = StudentCampaign.objects.filter(student_university=university, is_approve=True).order_by('-created_at')
+    campaign_awaiting_approve = StudentCampaign.objects.filter(is_approve=False)
     
         
     total_donation = all_donations.aggregate(Sum('amount'))
@@ -38,10 +40,63 @@ def UniversityDashboard(request):
         'total_donation' : total_donation,
         'total_amount_needed': total_amount_needed,
         'university_donations': university_donations,
+        'all_campaign': all_campaign,
+        'students_awaiting_approve': students_awaiting_approve,
+        'campaign_awaiting_approve': campaign_awaiting_approve,
     }
     return render(request, 'university/universityDashboard.html', context)
 
 
+@login_required(login_url='login')
+@user_passes_test(check_role_university)
+def universityProfile(request):
+    university = get_object_or_404(University, user=request.user)
+    
+    context = {
+        'university': university,
+    }
+    return render(request, 'university/universityProfile.html', context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(check_role_university)
+def students_awaiting_approval(request):
+    university = get_object_or_404(University, user=request.user)
+    students_awaiting_approve = Student.objects.filter(university=university, is_verified=False)
+    context = {
+        'university': university,
+        'students_awaiting_approve' :students_awaiting_approve,
+    }
+    return render(request, 'university/student_awaiting_approval.html', context)
+    
+
+
+@login_required(login_url='login')
+@user_passes_test(check_role_university)
+def students_awaiting_approval_details(request, student_id):
+    university = get_object_or_404(University, user=request.user)
+    student = get_object_or_404 (Student, id=student_id)
+    context = {
+        'university': university,
+        'student' :student,
+    }
+    return render(request, 'university/student_awaiting_approval_detail.html', context)
+    
+    
+
+@login_required(login_url='login')
+@user_passes_test(check_role_university)
+def approval_student(request, student_id):
+    student = get_object_or_404 (Student, id=student_id)
+    student_id = student.id
+
+    Student.objects.filter(pk=int(student_id)).update(is_verified=True)
+    
+    messages.success(request, 'Student Account has been Approved successfully!')
+    return redirect('universityStudents')
+    
+      
 
 @login_required(login_url='login')
 @user_passes_test(check_role_university)
@@ -100,56 +155,44 @@ def universityAddStudent(request):
 
 @login_required(login_url='login')
 @user_passes_test(check_role_university)
-def edit_student(request, student_id):
-    d_student = get_object_or_404(Student, id=student_id)
-    user_form = UserForm(request.POST, instance=d_student.user)
+def edit_student(request, id):
+    university = get_object_or_404(University, user=request.user)
+    d_student = get_object_or_404(Student, id=id)
     student_form = StudentForm(request.POST, request.FILES, instance=d_student)
-    context = {
-        'user_form': user_form,
-        'student_form': student_form,
-        'student_id': student_id,
-        'page_title': 'Edit Student'
-    }
     if request.method == 'POST':
-        if user_form.is_valid() and student_form.is_valid():
-            username = user_form.cleaned_data['username']
-            email = user_form.cleaned_data['email']
-            password = user_form.cleaned_data['password']
+        if student_form.is_valid():            
+            student = student_form.save(commit=False)
+            student.user = d_student
+            student_id = student_form.cleaned_data['student_id']
+            full_name = student_form.cleaned_data['full_name']
+            profile_picture = student_form.cleaned_data['profile_picture']
+            gender = student_form.cleaned_data['gender']
+            phone_number = student_form.cleaned_data['phone_number']
+            address = student_form.cleaned_data['address']
             
-            try:
-                user = User.objects.get(id=student.user.id)
-                user.username = username
-                user.email = email
-                if password != None:
-                    user.set_password(password)
-                
-                
-                student = student_form.save(commit=False)
-                student.user = user
-                student_id = student_form.cleaned_data['student_id']
-                full_name = student_form.cleaned_data['full_name']
-                profile_picture = student_form.cleaned_data['profile_picture']
-                gender = student_form.cleaned_data['gender']
-                phone_number = student_form.cleaned_data['phone_number']
-                address = student_form.cleaned_data['address']
-                
-                student.is_verified == True
-                student.university_id = get_university(request)
-                student.save()
-                context = {
-                    'user_form': user_form,
-                    'student_form': student_form,
-                }
+            student.is_verified = True
+            student.university_id = university.id
+            student.save()
+            context = {
+                'student_form': student_form,
+            }
             
-                messages.success(request, 'Account Created successfully!')
-                return redirect('universityStudents')
-                    
-            except Exception as e:
-                messages.error(request, "Could Not Update " + str(e))
+            messages.success(request, 'Account Created successfully!')
+            return redirect('universityStudents')
+        
         else:
-            messages.error(request, "Please Fill Form Properly!")
+            print('invalid form')
+            print(student_form)
+            messages.error(request, student_form.errors)
     else:
-        return render(request, "university/edit_student.html", context)
+        student_form = StudentForm(request.POST, request.FILES, instance=d_student)
+            
+    
+    context = {
+        'university': university,
+        'student_form': student_form,
+    }
+    return render(request, "university/edit_student.html", context)
 
 
 
@@ -159,7 +202,7 @@ def edit_student(request, student_id):
 @user_passes_test(check_role_university)
 def universityAllStudent(request):
     university = get_object_or_404(University, user=request.user)
-    all_students = Student.objects.filter(university_id=university).order_by('-student_id')
+    all_students = Student.objects.filter(university_id=university, is_verified=True).order_by('-student_id')
 
     
     context = {
@@ -177,14 +220,26 @@ def universityViewStudent(request, student_id):
     student = get_object_or_404 (Student, id=student_id)
     student_campaign = StudentCampaign.objects.filter(user=student).last()
 
+    amount_left = student_campaign.financial_need - student_campaign.amount_raised
     
     context = {
         'university': university,
         'student': student,
         'student_campaign': student_campaign,
+        'amount_left': amount_left,
     }
     return render(request, 'university/studentDetail.html', context)
 
+
+
+def universityDeleteStudent(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+    student_account = User.objects.get(email = student.user)
+    student.delete()
+    student_account.delete()
+    
+    messages.success(request, 'Student Account Deleted')
+    return redirect('universityStudents')
 
 
 @login_required(login_url='login')
@@ -217,7 +272,6 @@ def UniversityAddStudentsCampaign(request, student_id):
         'student': student,
         'student_campaign': student_campaign,
         'form': form,
-        'campaign': campaign,
     }
     return render(request, 'university/addStudentsCampaign.html', context)
 
@@ -240,7 +294,6 @@ def universityDonations(request):
 
 
 
-
 # Create your views here.
 @login_required(login_url='login')
 @user_passes_test(check_role_university)
@@ -248,6 +301,8 @@ def UniversityStudentsCampaign(request):
     university = get_object_or_404(University, user=request.user)
     
     all_campaign = StudentCampaign.objects.filter(student_university=university).order_by('-created_at')
+    
+    
     context = {
         'university': university,
         'all_campaign': all_campaign,
@@ -255,38 +310,33 @@ def UniversityStudentsCampaign(request):
     return render(request, 'university/studentsCampaign.html', context)
 
 
-
-# @login_required(login_url='login')
-# @user_passes_test(check_role_university)
-# def UniversityAddStudentsCampaign(request):
-#     university = get_object_or_404(University, user=request.user)    
-#     all_students = Student.objects.filter(university_id=university)
-        
-#     context = {
-#         'university': university,
-#         'all_students': all_students,
-#     }
-#     if request.method == 'GET':
-#         return render(request, 'university/addStudentsCampaign.html', context)
+@login_required(login_url='login')
+@user_passes_test(check_role_university)
+def students_campaign_awaiting_approval(request):
+    university = get_object_or_404(University, user=request.user)
+    campaign_awaiting_approval = StudentCampaign.objects.filter(student_university=university, is_approve=False)
     
-#     if request.method == 'POST':
-#         user = request.POST.get('user')
-#         student_credentials = request.POST.get('student_credentials')
-#         financial_need = request.POST.get('financial_need')
-#         campaign_message = request.POST.get('campaign_message')
-#         payment_deadline = request.POST.get('payment_deadline')
+    if request.method == 'POST':
+        campaign_id = request.POST.getlist('approve')
+        for i in campaign_id:
+            StudentCampaign.objects.filter(pk=int(i)).update(is_approve=True)
+            messages.success(request, 'School(s) Account has been Approved successfully!')
+            return redirect('universityStudentCampaign')
+    
+    context = {
+        'university': university,
+        'campaign_awaiting_approval': campaign_awaiting_approval,
+    }
+    return render(request, 'university/campaign_awaiting_approval.html', context)
 
-#         if not user:
-#             messages.error(request, 'Student is required')
-#             return render(request, 'university/addStudentsCampaign.html', context)
 
-#         StudentCampaign.objects.create(user=user, student_university=university.id, 
-#                 student_credentials=student_credentials, financial_need=financial_need, 
-#                 campaign_message=campaign_message, payment_deadline=payment_deadline)
-#         # campaign.save(commit=False)
-#         # campaign.is_approve = True
-        
-#         messages.success(request, 'Student Campaign saved successfully')
+@login_required(login_url='login')
+@user_passes_test(check_role_university)
+def approve_campaign(request, campaign_id):
+    campaign = get_object_or_404(StudentCampaign, id=campaign_id)
+    campaign_id = campaign.id
 
-#         return redirect('universityStudentCampaign')
-
+    StudentCampaign.objects.filter(pk=int(campaign_id)).update(is_approve=True)
+    
+    messages.success(request, 'Campaign Approved successfully!')
+    return redirect('campaign-awaiting-approval')

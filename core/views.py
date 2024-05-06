@@ -35,8 +35,11 @@ def studentDetails(request: HttpRequest, id) -> HttpResponse:
     students_campaign = StudentCampaign.objects.filter(is_approve=True, campaign_status="Ongoing")
     student = get_object_or_404(students_campaign, id=id)
     
+    amount_left = student.financial_need - student.amount_raised
+    
     context = {
         'student': student,
+        'amount_left': amount_left,
     }
     return render(request, 'frontend/campaignDetails.html', context)
 
@@ -54,6 +57,11 @@ def initiate_payment(request: HttpRequest, id) -> HttpResponse:
                 donation.students = student
                 donation.student_university = student.user.university
                 donation.save()
+                amm = donation.students.amount_raised
+                mdd = donation.amount
+                new = amm + mdd
+                print(new)
+                StudentCampaign.objects.filter(pk=int(donation.students.id)).update(amount_raised=new)
                 return render(request, 'frontend/make_payment.html', {'donation': donation, 'paystack_public_key': settings.PAYSTACK_PUBLIC_KEY})
         else:
             donation_form = DonationForm()
@@ -73,7 +81,9 @@ def verify_payment(request: HttpRequest, ref:str) -> HttpResponse:
     if request.user.is_authenticated:
         donation = get_object_or_404(Donations, ref=ref)
         verified = donation.verify_payment()
+
         if verified:
+            StudentCampaign.objects.filter(pk=int(donation.students.id)).update(amount_raised=donation.amount)
             messages.success(request, "Payment Verification Successful")
         else:
             messages.error(request, "Payment Verification Failed")

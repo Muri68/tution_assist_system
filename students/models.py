@@ -52,6 +52,7 @@ class StudentCampaign(models.Model):
     student_university = models.ForeignKey(University, on_delete=models.CASCADE, related_name='campaign_student_university')    
     financial_need = models.DecimalField(max_digits=10, decimal_places=2)
     amount_raised = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    amount_left = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     campaign_message = models.TextField()
     campaign_status = models.CharField(max_length=15, choices=CAMPAIGN_STATUS, default='Ongoing')
     payment_deadline = models.DateField()
