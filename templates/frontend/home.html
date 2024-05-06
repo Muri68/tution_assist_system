@@ -196,7 +196,7 @@
         <div class="row">
             <!--Project One Single Start-->
             {% for campaign in students_campaign %}
-            <div class="col-xl-4 col-lg-6 col-md-6">
+            <a href="{% url 'studentDetails' campaign.id %}" class="col-xl-4 col-lg-6 col-md-6">
                 <div class="project-one__single">
                     <div class="project-one__img-box">
                         <div class="project-one__img">
@@ -243,7 +243,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
             {% endfor %}
             <!--Project One Single End-->
             <br>

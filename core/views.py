@@ -61,7 +61,7 @@ def initiate_payment(request: HttpRequest, id) -> HttpResponse:
                 mdd = donation.amount
                 new = amm + mdd
                 print(new)
-                StudentCampaign.objects.filter(pk=int(donation.students.id)).update(amount_raised=new)
+                # StudentCampaign.objects.filter(pk=int(donation.students.id)).update(amount_raised=new)
                 return render(request, 'frontend/make_payment.html', {'donation': donation, 'paystack_public_key': settings.PAYSTACK_PUBLIC_KEY})
         else:
             donation_form = DonationForm()
