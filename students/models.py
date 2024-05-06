@@ -16,7 +16,7 @@ class Student(models.Model):
     student_id = models.CharField(max_length=50)
     university = models.ForeignKey(University, on_delete=models.CASCADE, related_name='student_university_id')
     full_name = models.CharField(max_length=255)
-    profile_picture = models.ImageField(upload_to='Student/profile_pictures', blank=True, null=True)
+    profile_picture = models.ImageField(default='default.png', upload_to='Student/profile_pictures', blank=True, null=True)
     gender = models.CharField(max_length=10, choices=GENDER)
     phone_number = models.CharField(max_length=12, blank=True)
     address = models.CharField(max_length=250, blank=True, null=True)
