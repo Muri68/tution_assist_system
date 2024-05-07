@@ -29,7 +29,7 @@
                         <div class="row">
                             <div class="col">
                                 <span class="h6 font-semibold text-muted text-sm d-block mb-2">Amount Raised</span>
-                                <span class="h3 font-bold mb-0">&#8358;{{student_total}}</span>
+                                <span class="h3 font-bold mb-0">&#8358;{{student_campaign.amount_raised}}</span>
                             </div>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                         <div class="row">
                             <div class="col">
                                 <span class="h6 font-semibold text-muted text-sm d-block mb-2">Deadline</span>
-                                <span class="h3 font-bold mb-0">{{student_campaign.created_at|timesince:student_campaign.payment_deadline}}</span>
+                                <span class="h3 font-bold mb-0">{{student_campaign.payment_deadline}}</span>
                             </div>
                         </div>
                     </div>

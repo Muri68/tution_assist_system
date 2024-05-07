@@ -72,7 +72,7 @@
             <!--Project One Single Start-->
             {% for student in students %}
             <div class="col-xl-4 col-lg-6 col-md-6">
-                <div class="project-one__single">
+                <a href="{% url 'studentDetails' student.id %}" class="project-one__single">
                     <div class="project-one__img-box">
                         <div class="project-one__img">
                             {% if student.user.profile_picture %}
@@ -100,7 +100,7 @@
                             <p class="project-one__goals-one">Goal:<span>&#8358;{{student.financial_need}}</span></p>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             {% endfor %}
             <!--Project One Single End-->
