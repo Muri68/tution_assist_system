@@ -219,14 +219,15 @@ def universityViewStudent(request, student_id):
     university = get_object_or_404(University, user=request.user)
     student = get_object_or_404 (Student, id=student_id)
     student_campaign = StudentCampaign.objects.filter(user=student).last()
-
-    amount_left = student_campaign.financial_need - student_campaign.amount_raised
+    amount_left = ''
+    if student_campaign:
+        amount_left = student_campaign.financial_need - student_campaign.amount_raised
     
     context = {
         'university': university,
         'student': student,
         'student_campaign': student_campaign,
-        'amount_left': amount_left,
+        'amount_left': amount_left
     }
     return render(request, 'university/studentDetail.html', context)
 
@@ -257,6 +258,7 @@ def UniversityAddStudentsCampaign(request, student_id):
             campaign_message = form.cleaned_data['campaign_message']
             payment_deadline = form.cleaned_data['payment_deadline']
             campaign = StudentCampaign.objects.create(user=student, student_university=student.university, student_credentials=student_credentials, financial_need=financial_need, campaign_message=campaign_message, payment_deadline=payment_deadline)
+            campaign.is_approve = True
             campaign.save()
             messages.success(request, 'Campaign created Successfully.')
             return redirect('universityStudentCampaign')

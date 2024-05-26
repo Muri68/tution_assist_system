@@ -22,7 +22,7 @@
                 </div>
             </div>
         </div>
-
+        {% include 'includes/alerts.html' %}
         <div class="row">
             <div class="col-sm-12">
                 <div class="card card-table">
@@ -46,10 +46,10 @@
                                         <td>{{campaign.user.student_id}}</td>
                                         <td>
                                             <h2 class="table-avatar">
-                                                <a href="{% url 'student_detail' campaign.id %}" class="avatar avatar-sm mr-2">
+                                                <a href="{% url 'student_detail' campaign.user.id %}" class="avatar avatar-sm mr-2">
                                                     <img class="avatar-img rounded-circle" src="{{campaign.user.profile_picture.url}}" alt="User Image">
                                                 </a>
-                                                <a href="{% url 'student_detail' campaign.id %}">{{campaign.user.full_name}}</a>
+                                                <a href="{% url 'student_detail' campaign.user.id %}">{{campaign.user.full_name}}</a>
                                             </h2>
                                         </td>
                                         <td>{{campaign.user.gender}}</td>

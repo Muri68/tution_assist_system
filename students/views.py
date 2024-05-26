@@ -19,7 +19,8 @@ def studentDashboard(request):
     student_campaign = StudentCampaign.objects.filter(user=student).last()
     student_donation = Donations.objects.all()
     orders = Donations.objects.filter(students__in=[student.id]).order_by('-created_at')
-    amount_left = student_campaign.financial_need - student_campaign.amount_raised
+    if orders:
+        amount_left = student_campaign.financial_need - student_campaign.amount_raised
 
 
     context = {
@@ -73,8 +74,8 @@ def studentEditProfile(request):
 def studentCampaign(request):
     student = get_object_or_404(Student, user=request.user)
     student_campaign = StudentCampaign.objects.filter(user=student).first()
-
-    amount_left = student_campaign.financial_need - student_campaign.amount_raised
+    if student_campaign:
+        amount_left = student_campaign.financial_need - student_campaign.amount_raised
     
     context = {
         'student_campaign': student_campaign,
